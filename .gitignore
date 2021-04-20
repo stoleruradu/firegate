@@ -1,0 +1,15 @@
+.idea/
+.envrc
+node_modules/
+migrations/
+
+.DS_Store
+*.map
+
+# output
+lib/**/*.js
+cli/**/*.js
+bin/**/*.js
+lib/**/*.d.ts
+cli/**/*.d.ts
+bin/**/*.d.ts
