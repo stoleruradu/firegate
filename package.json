@@ -1,38 +1,61 @@
 {
-  "name": "firegrator",
-  "version": "1.0.0",
-  "description": "Firestore migrations CLI.",
-  "dependencies": {
-    "@google-cloud/firestore": "4.9.9",
-    "commander": "7.2.0",
-    "firebase-admin": "9.6.0",
-    "typescript": "4.2.4"
-  },
-  "bin": {
-    "firegrator": "bin/firegrator.js"
-  },
-  "engines": {
-    "node": ">= 10.13.0",
-    "npm": ">= 6.11.0"
-  },
-  "devDependencies": {},
-  "scripts": {
-    "build": "tsc",
-    "start": "node bin/firegrator.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/stoleruradu/firegrator.git"
-  },
-  "keywords": [
-    "firestore",
-    "migrations",
-    "typescript"
-  ],
-  "author": "Stoleru Radu",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/stoleruradu/firegrator/issues"
-  },
-  "homepage": "https://github.com/stoleruradu/firegrator#readme"
+    "name": "firegrator",
+    "version": "0.0.1-beta.3",
+    "description": "Firestore migrations CLI.",
+    "publishConfig": {
+        "access": "public"
+    },
+    "dependencies": {
+        "@google-cloud/firestore": "4.9.9",
+        "commander": "7.2.0",
+        "firebase-admin": "9.6.0",
+        "typescript": "4.2.4"
+    },
+    "bin": {
+        "firegrator": "bin/firegrator"
+    },
+    "files": [
+        "lib",
+        "cli"
+    ],
+    "engines": {
+        "node": ">= 10.13.0",
+        "npm": ">= 6.11.0"
+    },
+    "devDependencies": {
+        "@typescript-eslint/eslint-plugin": "4.22.0",
+        "@typescript-eslint/parser": "4.22.0",
+        "eslint": "7.24.0",
+        "eslint-config-prettier": "8.2.0",
+        "eslint-config-standard": "16.0.2",
+        "eslint-plugin-import": "2.22.1",
+        "eslint-plugin-node": "11.1.0",
+        "eslint-plugin-promise": "4.3.1",
+        "husky": "6.0.0",
+        "prettier": "2.2.1",
+        "ts-loader": "9.0.2",
+        "ts-node": "9.1.1"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node bin/firegrator",
+        "format": "prettier --write \"**/*.{ts,json}\"",
+        "lint": "eslint '{cli,lib}/**/*.ts' --fix",
+        "prepublish": "npm run build"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/stoleruradu/firegrator.git"
+    },
+    "keywords": [
+        "firestore",
+        "migrations",
+        "typescript"
+    ],
+    "author": "Stoleru Radu",
+    "license": "MIT",
+    "bugs": {
+        "url": "https://github.com/stoleruradu/firegrator/issues"
+    },
+    "homepage": "https://github.com/stoleruradu/firegrator#readme"
 }

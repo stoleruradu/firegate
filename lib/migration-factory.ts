@@ -7,8 +7,8 @@ const EMPTY_LINE = '\n';
 const EMPTY_STRING = '';
 const SPACE_TAB = ' ';
 const DEFAULT_TABS_WIDTH = 2;
-const SINGLE_QUOTE = '\'';
-const DOUBLE_QUOTE = '\"';
+const SINGLE_QUOTE = `'`;
+const DOUBLE_QUOTE = `"`;
 
 function createStringTabs(tabs: number): string {
     return new Array(tabs).fill(SPACE_TAB).join(EMPTY_STRING);
@@ -17,24 +17,16 @@ function createStringTabs(tabs: number): string {
 function createMethodTemplate(name: 'execute' | 'up' | 'down', tabWidth: number): string[] {
     const TABS = createStringTabs(tabWidth);
     const TABSx2 = createStringTabs(tabWidth * 2);
-    return [
-        `${TABS}async ${name}(args: IMigrationArgs): Promise<void> {`,
-        `${TABSx2}return Promise.resolve(undefined);`,
-        `${TABS}}`,
-    ];
+    return [`${TABS}async ${name}(args: IMigrationArgs): Promise<void> {`, `${TABSx2}return Promise.resolve(undefined);`, `${TABS}}`];
 }
 
 function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
     const HEADER = `import { IIrreversibleMigration, IMigrationArgs } from ${QUOTE}${PACKAGE_NAME}${QUOTE};${EMPTY_LINE}`;
     const EXECUTE = createMethodTemplate('execute', tabWidth);
-    return [
-        HEADER,
-        `export default class IrreversibleMigration_${timestamp} implements IIrreversibleMigration {`,
-        ...EXECUTE,
-        '}',
-        EMPTY_STRING,
-    ].join(EMPTY_LINE);
+    return [HEADER, `export default class IrreversibleMigration_${timestamp} implements IIrreversibleMigration {`, ...EXECUTE, '}', EMPTY_STRING].join(
+        EMPTY_LINE,
+    );
 }
 
 function createReversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
@@ -70,7 +62,7 @@ export const TSFileFactory = {
         const migrationName = `${timestamp}-${name}.ts`;
         const migrationsDirPath = path.resolve(process.cwd(), migrationsDir);
         const migrationPath = path.resolve(migrationsDirPath, migrationName);
-        const tabs = options.tabs ? Number(options.tabs): DEFAULT_TABS_WIDTH;
+        const tabs = options.tabs ? Number(options.tabs) : DEFAULT_TABS_WIDTH;
 
         if (!fs.existsSync(migrationsDirPath)) {
             fs.mkdirSync(migrationsDirPath);
@@ -96,5 +88,5 @@ export const TSFileFactory = {
         }
 
         console.log('New migration file created:', migrationPath);
-    }
-}
+    },
+};

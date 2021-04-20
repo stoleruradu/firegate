@@ -6,7 +6,6 @@ import * as path from 'path';
 import { MIGRATION_COLLECTION_NAME, MIGRATION_DIR } from './constants';
 import { IIrreversibleMigration, IMigrationArgs, IReversibleMigration } from './interfaces';
 
-
 export interface IMigrationRunnerOptions {
     migrationsDir?: string;
     collectionName?: string;
@@ -15,7 +14,7 @@ export interface IMigrationRunnerOptions {
 
 const isIrreversibleMigration = (migration: unknown): migration is IIrreversibleMigration => {
     return 'function' === typeof Object.getOwnPropertyDescriptor(migration, 'execute')?.value;
-}
+};
 
 export class MigrationRunner {
     private static readonly _instance: MigrationRunner;
@@ -29,7 +28,7 @@ export class MigrationRunner {
             projectId: options.projectId,
             storageBucket: `${options.projectId}.appspot.com`,
         });
-        this.firestore =  new Firestore({ projectId: options.projectId });
+        this.firestore = new Firestore({ projectId: options.projectId });
         this.migrationCollection = this.firestore.collection(options.collectionName || MIGRATION_COLLECTION_NAME);
         this.migrationsDir = path.resolve(process.cwd(), options.migrationsDir || MIGRATION_DIR);
     }
@@ -39,7 +38,9 @@ export class MigrationRunner {
             return MigrationRunner._instance;
         }
 
-        Object.defineProperty(MigrationRunner, '_instance', { value: new MigrationRunner(options) });
+        Object.defineProperty(MigrationRunner, '_instance', {
+            value: new MigrationRunner(options),
+        });
 
         return MigrationRunner._instance;
     }
@@ -54,14 +55,12 @@ export class MigrationRunner {
 
     async rollback(migration: IReversibleMigration | IIrreversibleMigration): Promise<void> {
         if (isIrreversibleMigration(migration)) {
-            throw new Error('Cannot rollback an irreversible migration')
+            throw new Error('Cannot rollback an irreversible migration');
         }
         await migration.down(this.getFirestoreContext());
     }
 
-    async run(name?: string): Promise<void> {
-
-    }
+    async run(name?: string): Promise<void> {}
 
     getFirestoreContext(): IMigrationArgs {
         return { firestore: this.firestore, app: this.app };
