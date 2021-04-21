@@ -16,3 +16,5 @@ bin/**/*.d.ts
 
 index.d.ts
 index.js
+
+serviceAccountKey
