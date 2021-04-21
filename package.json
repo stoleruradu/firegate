@@ -1,6 +1,6 @@
 {
     "name": "firegrator",
-    "version": "0.0.6",
+    "version": "0.0.7",
     "description": "Firestore migrations CLI.",
     "publishConfig": {
         "access": "public"
