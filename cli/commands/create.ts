@@ -1,5 +1,5 @@
 import { CommanderStatic } from 'commander';
-import { IMigrationFileOptions, TSFileFactory } from '../../lib/migration-factory';
+import { IMigrationFileOptions, TSFileFactory } from '../../lib/file-generator';
 
 export function load(commander: CommanderStatic): void {
     commander.program

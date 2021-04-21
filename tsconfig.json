@@ -11,6 +11,5 @@
         "forceConsistentCasingInFileNames": true
     },
     "include": ["bin", "cli", "lib"],
-    "files": ["index.ts"],
     "exclude": ["node_modules"]
 }
