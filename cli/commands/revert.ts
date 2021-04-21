@@ -2,7 +2,7 @@ import { CommanderStatic } from 'commander';
 
 export function load(commander: CommanderStatic): void {
     commander.program
-        .command('migration:run [name]')
-        .description('Run all migrations if name was not provided')
+        .command('migration:revert [name]')
+        .description('Revert a migration.')
         .action(() => void 0);
 }
