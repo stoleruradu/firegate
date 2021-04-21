@@ -1,6 +1,5 @@
-#!/usr/bin/env node
 import * as Commander from 'commander';
-import * as CommandLoader from '../cli/command-loader';
+import * as CommandLoader from './command-loader';
 import { PACKAGE_VERSION } from '../lib/constants';
 
 void (function main(): void {
