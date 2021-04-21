@@ -24,7 +24,7 @@ function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQ
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
     const HEADER = `import { IIrreversibleMigration, IMigrationArgs } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
     const EXECUTE = createMethodTemplate('execute', tabWidth);
-    return [HEADER, `export default class IrreversibleMigration_${timestamp} implements IIrreversibleMigration {`, ...EXECUTE, '}', EMPTY_STRING].join(
+    return [HEADER, `export default class IrreversibleMigration${timestamp} implements IIrreversibleMigration {`, ...EXECUTE, '}', EMPTY_STRING].join(
         EMPTY_LINE,
     );
 }
@@ -36,7 +36,7 @@ function createReversibleTemplate(timestamp: number, tabWidth: number, doubleQuo
     const DOWN = createMethodTemplate('down', tabWidth);
     return [
         HEADER,
-        `export default class ReversibleMigration_${timestamp} implements IReversibleMigration {`,
+        `export default class ReversibleMigration${timestamp} implements IReversibleMigration {`,
         ...UP,
         EMPTY_STRING,
         ...DOWN,
