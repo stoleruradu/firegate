@@ -17,12 +17,12 @@ function createStringTabs(tabs: number): string {
 function createMethodTemplate(name: 'execute' | 'up' | 'down', tabWidth: number): string[] {
     const TABS = createStringTabs(tabWidth);
     const TABSx2 = createStringTabs(tabWidth * 2);
-    return [`${TABS}async ${name}(args: IMigrationArgs): Promise<void> {`, `${TABSx2}return Promise.resolve(undefined);`, `${TABS}}`];
+    return [`${TABS}async ${name}(input: IMigrationInput): Promise<void> {`, `${TABSx2}return Promise.resolve(undefined);`, `${TABS}}`];
 }
 
 function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
-    const HEADER = `import { IIrreversibleMigration, IMigrationArgs } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
+    const HEADER = `import { IIrreversibleMigration, IMigrationInput } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
     const EXECUTE = createMethodTemplate('execute', tabWidth);
     return [HEADER, `export default class IrreversibleMigration${timestamp} implements IIrreversibleMigration {`, ...EXECUTE, '}', EMPTY_STRING].join(
         EMPTY_LINE,
@@ -31,7 +31,7 @@ function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQ
 
 function createReversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
-    const HEADER = `import { IMigrationArgs, IReversibleMigration } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
+    const HEADER = `import { IMigrationInput, IReversibleMigration } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
     const UP = createMethodTemplate('up', tabWidth);
     const DOWN = createMethodTemplate('down', tabWidth);
     return [
@@ -54,8 +54,8 @@ export interface IMigrationFileOptions {
 }
 
 // TODO: add proper abstraction to support JS files
-export const TSFileFactory = {
-    create(name: string, options: IMigrationFileOptions): void {
+export const TSFileGenerator = {
+    generate(name: string, options: IMigrationFileOptions): void {
         const timestamp = Date.now();
         const migrationsDir = options['path'] || MIGRATION_DIR;
         const irreversible = !!options['irreversible'];
@@ -75,9 +75,14 @@ export const TSFileFactory = {
             assert.ok(cloneFileName, `Filed to find migration file timestamp: ${options.clone}`);
 
             const clonePath = path.resolve(migrationsDirPath, cloneFileName);
-            const cloneFile = fs.readFileSync(clonePath);
+            const cloneFile = fs
+                .readFileSync(clonePath)
+                .toString()
+                .replace(/(class\s+?)(Reversible|Irreversible)(Migration)([0-9]+)/s, `$1$2$3${timestamp}`);
 
             fs.writeFileSync(migrationPath, Buffer.from(cloneFile));
+
+            console.log(`New migration clone created: ${migrationPath}`);
             return;
         }
 
@@ -87,6 +92,6 @@ export const TSFileFactory = {
             fs.writeFileSync(migrationPath, Buffer.from(createReversibleTemplate(timestamp, tabs, !!options.doubleQuote)));
         }
 
-        console.log('New migration file created:', migrationPath);
+        console.log(`New migration file created: ${migrationPath}`);
     },
 };

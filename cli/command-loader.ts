@@ -1,10 +1,10 @@
 import { CommanderStatic } from 'commander';
-import * as MakeCommand from './commands/create';
+import * as GenerateCommand from './commands/generate';
 import * as RevertCommand from  './commands/revert';
-import * as RunCommand from  './commands/revert';
+import * as RunCommand from  './commands/run';
 
 export function load(program: CommanderStatic): void {
-    MakeCommand.load(program);
+    GenerateCommand.load(program);
     RevertCommand.load(program);
     RunCommand.load(program);
 }
