@@ -6,9 +6,9 @@ import { getMigrationsFiles } from '../../lib/utils';
 export function load(commander: CommanderStatic): void {
     commander.program
         .command('ls')
-        .description('list not executed migrations')
-        .option('--path [path]', 'path to migrations location')
-        .option('--collection [collectionName]', 'database collection name')
+        .description('List not executed migrations')
+        .option('--path [path]', 'path to migrations location (default: migrations)')
+        .option('--collection [collectionName]', 'database collection name (default: migrations)')
         .option('-E, --executed', 'list only executed')
         .option('-A, --all', 'list all')
         .action(async (options: IListOptions) => {
