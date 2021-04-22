@@ -23,7 +23,7 @@ function createMethodTemplate(name: 'execute' | 'up' | 'down', tabWidth: number)
 
 function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
-    const HEADER = `import { IIrreversibleMigration, IMigrationInput } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
+    const HEADER = `import { IIrreversibleMigration, IMigrationInput } from ${QUOTE}${PACKAGE_NAME}/lib/types${QUOTE};${EMPTY_LINE}`;
     const EXECUTE = createMethodTemplate('execute', tabWidth);
     return [HEADER, `export default class IrreversibleMigration${timestamp} implements IIrreversibleMigration {`, ...EXECUTE, '}', EMPTY_STRING].join(
         EMPTY_LINE,
@@ -32,7 +32,7 @@ function createIrreversibleTemplate(timestamp: number, tabWidth: number, doubleQ
 
 function createReversibleTemplate(timestamp: number, tabWidth: number, doubleQuote: boolean): string {
     const QUOTE = doubleQuote ? DOUBLE_QUOTE : SINGLE_QUOTE;
-    const HEADER = `import { IMigrationInput, IReversibleMigration } from ${QUOTE}${PACKAGE_NAME}/lib/interfaces${QUOTE};${EMPTY_LINE}`;
+    const HEADER = `import { IMigrationInput, IReversibleMigration } from ${QUOTE}${PACKAGE_NAME}/lib/types${QUOTE};${EMPTY_LINE}`;
     const UP = createMethodTemplate('up', tabWidth);
     const DOWN = createMethodTemplate('down', tabWidth);
     return [
