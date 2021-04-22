@@ -3,21 +3,22 @@ import fs from 'fs';
 import { IIrreversibleMigration } from './types';
 import assert from 'assert';
 
-export const getMigrationAbsolutePath = (input: { migrationsDir?: string; migrationFileName?: string }): string => {
-    const migrationsPath = input.migrationsDir || 'migrations';
-    if (input.migrationFileName) {
-        return path.resolve(process.cwd(), migrationsPath, input.migrationFileName);
-    }
-    return path.resolve(process.cwd(), migrationsPath);
-};
-
-export const getMigrationsFiles = (input: { searchString?: string; migrationsDir?: string }): string[] => {
-    const absolutePath = getMigrationAbsolutePath({ migrationsDir: input.migrationsDir });
+export const getAbsolutePath = (input: { migrationsDir?: string; migrationFileName?: string }): string => {
+    const absolutePath = input.migrationsDir || 'migrations';
 
     if (!fs.existsSync(absolutePath)) {
         fs.mkdirSync(absolutePath);
     }
 
+    if (input.migrationFileName) {
+        return path.resolve(process.cwd(), absolutePath, input.migrationFileName);
+    }
+
+    return path.resolve(process.cwd(), absolutePath);
+};
+
+export const getMigrationsFiles = (input: { searchString?: string; migrationsDir?: string }): string[] => {
+    const absolutePath = getAbsolutePath({ migrationsDir: input.migrationsDir });
     const files = fs.readdirSync(absolutePath).filter((fileName) => /[0-9]+-.+\.(ts|js)/.test(fileName));
 
     if (input.searchString) {

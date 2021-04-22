@@ -1,6 +1,6 @@
 import admin from 'firebase-admin';
 import { IMigration, IMigrationInput, IMigrationLog, IReversibleMigration, IRunnerOptions, MigrationType } from './types';
-import { getMigrationAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
+import { getAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
 import { firestore } from 'firebase-admin/lib/firestore';
 import * as assert from 'assert';
 import App = admin.app.App;
@@ -93,7 +93,7 @@ export class Runner {
     }
 
     private async createMigration(migrationFileName: string): Promise<IMigration> {
-        const migrationPath = getMigrationAbsolutePath({ migrationsDir: this.migrationsDir, migrationFileName });
+        const migrationPath = getAbsolutePath({ migrationsDir: this.migrationsDir, migrationFileName });
         const { default: MigrationClass } = await import(migrationPath);
 
         return new MigrationClass();

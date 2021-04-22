@@ -1,7 +1,7 @@
 import fs from 'fs';
 import * as assert from 'assert';
 import { IGenerationOption } from './types';
-import { getMigrationAbsolutePath, getMigrationsFiles } from './utils';
+import { getAbsolutePath, getMigrationsFiles } from './utils';
 
 const EMPTY_LINE = '\n';
 const EMPTY_STRING = '';
@@ -52,7 +52,7 @@ export const MigrationFileGenerator = {
         const timestamp = Date.now();
         const irreversible = !!options['irreversible'];
         const migrationName = `${timestamp}-${name}.ts`;
-        const migrationPath = getMigrationAbsolutePath({ migrationsDir: options.path, migrationFileName: migrationName });
+        const migrationPath = getAbsolutePath({ migrationsDir: options.path, migrationFileName: migrationName });
         const tabs = options.tabs ? Number(options.tabs) : DEFAULT_TABS_WIDTH;
 
         if (options.clone) {
@@ -60,7 +60,7 @@ export const MigrationFileGenerator = {
 
             assert.ok(cloneFileName, `Filed to find migration file timestamp: ${options.clone}`);
 
-            const clonePath = getMigrationAbsolutePath({ migrationsDir: options.path, migrationFileName: cloneFileName});
+            const clonePath = getAbsolutePath({ migrationsDir: options.path, migrationFileName: cloneFileName});
             const cloneFile = fs
                 .readFileSync(clonePath)
                 .toString()
