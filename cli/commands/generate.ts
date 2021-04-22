@@ -1,6 +1,7 @@
 import { CommanderStatic } from 'commander';
-import { IMigrationFileOptions, TSFileGenerator } from '../../lib/file-generator';
+import { MigrationFileGenerator } from '../../lib/generator';
 import * as assert from 'assert';
+import { IGenerationOption } from '../../lib/types';
 
 export function load(commander: CommanderStatic): void {
     commander.program
@@ -11,5 +12,5 @@ export function load(commander: CommanderStatic): void {
         .option('--tabs [tabsWidth]', 'Tabs width for indentation.')
         .option('--doubleQuote [doubleQuote]', 'Use double quotes instead of single quotes for imports.')
         .description('Create a new migration file.')
-        .action((name: string, options: IMigrationFileOptions) => void assert.ok(name, 'Name is required') || TSFileGenerator.generate(name, options));
+        .action((name: string, options: IGenerationOption) => void assert.ok(name, 'Name is required') || MigrationFileGenerator.generate(name, options));
 }

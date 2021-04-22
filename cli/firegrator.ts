@@ -1,10 +1,9 @@
 import * as Commander from 'commander';
-import * as CommandLoader from './command-loader';
-import { PACKAGE_VERSION } from '../lib/constants';
+import * as CommandLoader from './loader';
 
 void (function main(): void {
     Commander.program
-        .version(PACKAGE_VERSION, '-v, --version', 'Output the current version.')
+        .version(require('../package.json').version, '-v, --version', 'Output the current version.')
         .usage('<command> [options]')
         .helpOption('-h, --help', 'Output usage information.');
 

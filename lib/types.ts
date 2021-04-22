@@ -25,13 +25,23 @@ export interface IRunnerOptions {
     dryRun?: boolean;
 }
 
+
+export interface IGenerationOption {
+    irreversible?: boolean;
+    clone?: string;
+    path?: string;
+    tabs?: string;
+    doubleQuote?: boolean;
+}
+
 export enum MigrationType {
     reversible = 'reversible',
     irreversible = 'irreversible',
 }
 
-export interface IExecutedMigration {
+export interface IMigrationLog {
     timestamp: string;
     name: string;
     type: MigrationType;
+    executedAt: Date;
 }

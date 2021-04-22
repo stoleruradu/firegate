@@ -1,7 +1,7 @@
 import fs from 'fs';
-import path from 'path';
-import { MIGRATION_DIR, PACKAGE_NAME } from './constants';
 import * as assert from 'assert';
+import { IGenerationOption } from './types';
+import { getMigrationAbsolutePath, getMigrationsFiles } from './utils';
 
 const EMPTY_LINE = '\n';
 const EMPTY_STRING = '';
@@ -9,6 +9,7 @@ const SPACE_TAB = ' ';
 const DEFAULT_TABS_WIDTH = 2;
 const SINGLE_QUOTE = `'`;
 const DOUBLE_QUOTE = `"`;
+const PACKAGE_NAME = require('../package.json').name as string;
 
 function createStringTabs(tabs: number): string {
     return new Array(tabs).fill(SPACE_TAB).join(EMPTY_STRING);
@@ -45,36 +46,21 @@ function createReversibleTemplate(timestamp: number, tabWidth: number, doubleQuo
     ].join(EMPTY_LINE);
 }
 
-export interface IMigrationFileOptions {
-    irreversible?: boolean;
-    clone?: string;
-    path?: string;
-    tabs?: string;
-    doubleQuote?: boolean;
-}
-
 // TODO: add proper abstraction to support JS files
-export const TSFileGenerator = {
-    generate(name: string, options: IMigrationFileOptions): void {
+export const MigrationFileGenerator = {
+    generate(name: string, options: IGenerationOption): void {
         const timestamp = Date.now();
-        const migrationsDir = options['path'] || MIGRATION_DIR;
         const irreversible = !!options['irreversible'];
         const migrationName = `${timestamp}-${name}.ts`;
-        const migrationsDirPath = path.resolve(process.cwd(), migrationsDir);
-        const migrationPath = path.resolve(migrationsDirPath, migrationName);
+        const migrationPath = getMigrationAbsolutePath({ migrationsDir: options.path, migrationFileName: migrationName });
         const tabs = options.tabs ? Number(options.tabs) : DEFAULT_TABS_WIDTH;
 
-        if (!fs.existsSync(migrationsDirPath)) {
-            fs.mkdirSync(migrationsDirPath);
-        }
-
         if (options.clone) {
-            const migrations = fs.readdirSync(migrationsDirPath);
-            const cloneFileName = migrations.find((path) => !!~path.indexOf(options.clone as string));
+            const [cloneFileName] = getMigrationsFiles({ migrationsDir: options.path, searchString: options.clone })
 
             assert.ok(cloneFileName, `Filed to find migration file timestamp: ${options.clone}`);
 
-            const clonePath = path.resolve(migrationsDirPath, cloneFileName);
+            const clonePath = getMigrationAbsolutePath({ migrationsDir: options.path, migrationFileName: cloneFileName});
             const cloneFile = fs
                 .readFileSync(clonePath)
                 .toString()
