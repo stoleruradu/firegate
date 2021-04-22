@@ -25,6 +25,12 @@ export interface IRunnerOptions {
     dryRun?: boolean;
 }
 
+export interface IListOptions {
+    path?: string;
+    collectionName?: string;
+    executed?: boolean;
+    all?: boolean;
+}
 
 export interface IGenerationOption {
     irreversible?: boolean;

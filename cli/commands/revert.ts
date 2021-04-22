@@ -5,11 +5,11 @@ import assert from 'assert';
 
 export function load(commander: CommanderStatic): void {
     commander.program
-        .command('migration:rollback [name]')
+        .command('revert [name]')
         .description('Revert a migration.')
         .option('--path [path]', 'Path to migrations location.')
-        .option('--collectionName [collectionName]', 'Database collection name.')
-        .option('--force [force]', 'Indicates to reran an executed migration.')
+        .option('--collection [collectionName]', 'Database collection name.')
+        .option('--force', 'Indicates to reran an executed migration.')
         .option('--dry-run [dryRun]', 'Run migrations without applying changes to db.')
-        .action(async (name, options: IRunnerOptions) => void assert.ok(name, 'Name should be provided') || Runner.instance(options).rollback(!!options.dryRun, !!options.force, name));
+        .action(async (name, options: IRunnerOptions) => void assert.ok(name, 'Name should be provided') || Runner.instance(options).revert(!!options.dryRun, !!options.force, name));
 }

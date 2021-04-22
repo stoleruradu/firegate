@@ -5,7 +5,7 @@ import { IGenerationOption } from '../../lib/types';
 
 export function load(commander: CommanderStatic): void {
     commander.program
-        .command('migration:generate [name]')
+        .command('generate [name]')
         .option('-I, --irreversible', 'Create a irreversible migration.')
         .option('-C, --clone [timestamp]', 'Create a new migration from existing one.')
         .option('--path [path]', 'Path to migrations location.')

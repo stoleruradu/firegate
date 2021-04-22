@@ -1,10 +1,12 @@
 import { CommanderStatic } from 'commander';
 import * as GenerateCommand from './commands/generate';
-import * as RollbackCommand from './commands/rollback';
+import * as RevertCommand from './commands/revert';
 import * as RunCommand from './commands/run';
+import * as ListCommand from './commands/list';
 
 export function load(program: CommanderStatic): void {
     GenerateCommand.load(program);
-    RollbackCommand.load(program);
+    RevertCommand.load(program);
     RunCommand.load(program);
+    ListCommand.load(program);
 }

@@ -34,11 +34,11 @@ export class Runner {
         }
     }
 
-    private async revert(migration: IReversibleMigration): Promise<void> {
+    private async rollback(migration: IReversibleMigration): Promise<void> {
         await migration.down(this.createMigrationInput());
     }
 
-    async rollback(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
+    async revert(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
         const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
         const pending = [
@@ -56,7 +56,7 @@ export class Runner {
             assert.ok(!isIrreversible(migration), `Cannot revert ${migrationFile} because it is an irreversible migration.`);
 
             if (!dryRun) {
-                await this.revert(migration);
+                await this.rollback(migration);
                 await this.removeMigrationLog(id);
             }
             console.info(`Migration ${migrationFile} reverted.`);
@@ -117,7 +117,7 @@ export class Runner {
         await this.migrationCollection.doc(id).delete();
     }
 
-    private async getExecutedMigrationLogs(): Promise<[string, IMigrationLog][]> {
+    async getExecutedMigrationLogs(): Promise<[string, IMigrationLog][]> {
         return this.migrationCollection
             .orderBy('timestamp', 'asc')
             .get()
