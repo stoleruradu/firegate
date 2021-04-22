@@ -1,6 +1,6 @@
 ## Description
 
-Firestore migrations CLI to easily generate run and explore firestore migrations.
+Firestore migrations CLI to easily generate, run and explore firestore migrations.
 
 ## Installation
 
@@ -51,7 +51,7 @@ Options:
 ### Examples
 Reversible migration template
 ```
-import { IMigrationInput, IReversibleMigration } from 'firegate/lib/interfaces';
+import { IMigrationInput, IReversibleMigration } from 'firegate/lib/types';
 
 export default class ReversibleMigration1619104543555 implements IReversibleMigration {
   async up(input: IMigrationInput): Promise<void> {
@@ -65,7 +65,7 @@ export default class ReversibleMigration1619104543555 implements IReversibleMigr
 ```
 Irreversible migration template
 ```
-import { IIrreversibleMigration, IMigrationInput } from 'firegate/lib/interfaces';
+import { IIrreversibleMigration, IMigrationInput } from 'firegate/lib/types';
 
 export default class IrreversibleMigration1619105016442 implements IIrreversibleMigration {
   async execute(input: IMigrationInput): Promise<void> {
