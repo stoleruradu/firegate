@@ -38,7 +38,7 @@
         "prettier": "2.2.1"
     },
     "scripts": {
-        "build": "tsc --noEmit",
+        "build": "tsc",
         "start": "node bin/firegate",
         "format": "prettier --write \"**/*.{ts,json}\"",
         "lint": "eslint '{cli,lib}/**/*.ts' --fix",
