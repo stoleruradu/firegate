@@ -27,7 +27,7 @@ export const getMigrationsFiles = (input: { searchString?: string; migrationsDir
     return files;
 };
 
-export const isIrreversibleMigration = (migration: unknown): migration is IIrreversibleMigration => {
+export const isIrreversible = (migration: unknown): migration is IIrreversibleMigration => {
     const isObject = (value: unknown): value is Record<string, unknown> => '[object Object]' === Object.prototype.toString.call(migration);
     const isFunction = (value: unknown): value is (...args: unknown[]) => unknown =>
         ['[object Function]', '[object AsyncFunction]'].includes(Object.prototype.toString.call(value));
@@ -37,5 +37,5 @@ export const isIrreversibleMigration = (migration: unknown): migration is IIrrev
 export const getMigrationInfo = (fileName: string, ext = '.ts'): [string, string, string] => {
     const match = /([0-9]+)-(.+)/s.exec(fileName);
     assert.ok(match);
-    return [match[1], path.basename(match[2], '.ts'), path.basename(fileName, ext)];
+    return [path.basename(fileName, ext), match[1], path.basename(match[2], '.ts')];
 };

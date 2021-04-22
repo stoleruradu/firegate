@@ -1,8 +1,8 @@
 import admin from 'firebase-admin';
-import { IMigration, IMigrationInput, IMigrationLog, IRunnerOptions, MigrationType } from './types';
-import * as assert from 'assert';
-import { getMigrationAbsolutePath, getMigrationsFiles, isIrreversibleMigration, getMigrationInfo } from './utils';
+import { IMigration, IMigrationInput, IMigrationLog, IReversibleMigration, IRunnerOptions, MigrationType } from './types';
+import { getMigrationAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
 import { firestore } from 'firebase-admin/lib/firestore';
+import * as assert from 'assert';
 import App = admin.app.App;
 import Firestore = admin.firestore.Firestore;
 import CollectionReference = admin.firestore.CollectionReference;
@@ -25,55 +25,68 @@ export class Runner {
         return new Runner(options);
     }
 
-    async migrate(migration: IMigration): Promise<MigrationType> {
-        const args = this.createMigrationInput();
-
-        if (isIrreversibleMigration(migration)) {
-            await migration.execute(args);
-            return MigrationType.irreversible;
+    private async migrate(migration: IMigration): Promise<void> {
+        const input = this.createMigrationInput();
+        if (isIrreversible(migration)) {
+            await migration.execute(input);
+        } else {
+            await migration.up(input);
         }
-        await migration.up(args);
-
-        return MigrationType.reversible;
     }
 
-    async revert(dryRun: boolean, searchString: string): Promise<void> {
-        const revert = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
-
-        console.info(`Found ${revert.length} migrations to revert.`);
-
-        for (const migrationFile of revert) {
-            const [_, __, id] = getMigrationInfo(migrationFile);
-            const migration = await this.createMigration(migrationFile);
-
-        }
-
-        if (isIrreversibleMigration(migration)) {
-            throw new Error('Cannot revert an irreversible migration');
-        }
-        const args = this.createMigrationInput();
-
-        await migration.down(args);
-        await this.removeMigrationLog(migrationFile);
+    private async revert(migration: IReversibleMigration): Promise<void> {
+        await migration.down(this.createMigrationInput());
     }
 
-    async run(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
-        const migrationFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
+    async rollback(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
+        const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
         const pending = [
             ...(searchString && force
-                ? migrationFiles
-                : migrationFiles.filter((path) => !executedMigrations.filter(({ timestamp }) => !!~path.indexOf(timestamp)).length)),
+                ? foundFiles
+                : foundFiles.filter((migrationFileName) => !!executedMigrations.filter(([id]) => !!~migrationFileName.indexOf(id)).length)),
         ];
 
-       console.info(`Found ${pending.length} migrations to run.`);
+        console.info(`Found ${pending.length} migrations to revert.`);
 
         for (const migrationFile of pending) {
-            const [timestamp, name, id] = getMigrationInfo(migrationFile);
+            const [id] = getMigrationInfo(migrationFile);
             const migration = await this.createMigration(migrationFile);
+
+            assert.ok(!isIrreversible(migration), `Cannot revert ${migrationFile} because it is an irreversible migration.`);
+
             if (!dryRun) {
-                const type = await this.migrate(migration);
-                await this.saveMigrationLog(id, { type, timestamp, name, executedAt: new Date() });
+                await this.revert(migration);
+                await this.removeMigrationLog(id);
+            }
+            console.info(`Migration ${migrationFile} reverted.`);
+        }
+    }
+
+    async run(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
+        const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
+        const executedMigrations = await this.getExecutedMigrationLogs();
+        const pending = [
+            ...(searchString && force
+                ? foundFiles
+                : foundFiles.filter((migrationFileName) => !executedMigrations.filter(([id]) => !!~migrationFileName.indexOf(id)).length)),
+        ];
+
+        console.info(`Found ${pending.length} migrations to run.`);
+
+        for (const migrationFile of pending) {
+            const [id, timestamp, name] = getMigrationInfo(migrationFile);
+            const migration = await this.createMigration(migrationFile);
+
+            if (!dryRun) {
+                const type = isIrreversible(migration) ? MigrationType.irreversible : MigrationType.reversible;
+                await this.migrate(migration);
+                await this.saveMigrationLog(id, {
+                    type,
+                    timestamp,
+                    name,
+                    executedAt: new Date(),
+                });
             }
             console.info(`Migration ${migrationFile} executed.`);
         }
@@ -104,18 +117,10 @@ export class Runner {
         await this.migrationCollection.doc(id).delete();
     }
 
-    private async getExecutedMigrationLogs(): Promise<IMigrationLog[]> {
+    private async getExecutedMigrationLogs(): Promise<[string, IMigrationLog][]> {
         return this.migrationCollection
             .orderBy('timestamp', 'asc')
             .get()
-            .then((snapshot) =>
-                snapshot.docs.map(
-                    (doc) =>
-                        ({
-                            ...doc.data(),
-                            executedAt: doc.updateTime.toDate(),
-                        } as IMigrationLog),
-                ),
-            );
+            .then((snapshot) => snapshot.docs.map((doc) => [doc.id, doc.data() as IMigrationLog]));
     }
 }
