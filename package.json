@@ -1,6 +1,6 @@
 {
     "name": "firegate",
-    "version": "0.1.1",
+    "version": "0.1.2",
     "description": "Firestore migrations CLI.",
     "publishConfig": {
         "access": "public"
