@@ -3,9 +3,9 @@ import * as CommandLoader from './loader';
 
 void (function main(): void {
     Commander.program
-        .version(require('../package.json').version, '-v, --version', 'Output the current version.')
+        .version(require('../package.json').version, '-v, --version', 'output the current version')
         .usage('<command> [options]')
-        .helpOption('-h, --help', 'Output usage information.');
+        .helpOption('-h, --help', 'output usage information');
 
     CommandLoader.load(Commander);
     Commander.program.parse(process.argv);
