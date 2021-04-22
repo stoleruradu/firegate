@@ -18,7 +18,7 @@ export const getMigrationsFiles = (input: { searchString?: string; migrationsDir
         fs.mkdirSync(absolutePath);
     }
 
-    const files = fs.readdirSync(absolutePath);
+    const files = fs.readdirSync(absolutePath).filter((fileName) => /[0-9]+-.+\.(ts|js)/.test(fileName));
 
     if (input.searchString) {
         return files.filter((fileName) => !!~fileName.indexOf(input.searchString as string));
