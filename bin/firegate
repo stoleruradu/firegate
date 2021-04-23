@@ -1,2 +1,2 @@
-#!/usr/bin/env node -r ts-node/register/transpile-only
+#!/usr/bin/env node -r
 require('../cli/firegate')
