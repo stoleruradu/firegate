@@ -1,2 +1,2 @@
-#!/usr/bin/env node -r
+#!/usr/bin/env node
 require('../cli/firegate')
