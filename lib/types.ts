@@ -52,3 +52,8 @@ export interface IMigrationLog {
     type: MigrationType;
     executedAt: Date;
 }
+
+export interface ITemplateFactory {
+    createIrreversibleMigration(timestamp: number): string;
+    createReversibleMigration(timestamp: number): string;
+}

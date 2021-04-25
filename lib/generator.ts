@@ -1,6 +1,6 @@
 import fs from 'fs';
 import * as assert from 'assert';
-import { IGenerationOption } from './types';
+import { IGenerationOption, ITemplateFactory } from './types';
 import { getAbsolutePath, getExtName, getMigrationsFiles } from './utils';
 
 const NEW_LINE = '\n';
@@ -61,11 +61,6 @@ class TemplateBuilder {
     }
 }
 
-interface ITemplateFactory {
-    createIrreversibleMigration(timestamp: number): string;
-    createReversibleMigration(timestamp: number): string;
-}
-
 abstract class TemplateFactory implements ITemplateFactory {
     protected readonly builder: TemplateBuilder;
     protected constructor(protected readonly pkgName: string, doubleQuote: boolean, tabsWidth?: number) {
@@ -81,7 +76,7 @@ class TypescriptTemplateFactory extends TemplateFactory {
         super(pkgName, doubleQuote, tabsWidth)
     }
 
-    protected createMethodBuilder(name: 'execute' | 'up' | 'down'): TemplateBuilder {
+    private createMethodBuilder(name: 'execute' | 'up' | 'down'): TemplateBuilder {
         return this.builder
             .clone()
             .spaceTabs(1)
@@ -147,7 +142,7 @@ class JavascriptTemplateFactory extends TemplateFactory {
 
     createReversibleMigration(timestamp: number): string {
         return this.builder.
-        reset()
+            reset()
             .writeLn(`module.exports = class ReversibleMigration${timestamp} {`)
             .spaceTabs(1)
             .writeLn(`async up({ app, firestore }) {`)
@@ -184,7 +179,6 @@ export class MigrationGenerator {
     private get templateFactory(): ITemplateFactory {
         switch (this.options.ext) {
             case 'js':
-                // TODO: create the factory implementation for js templates
                 return this.factories.get('js')!;
             case 'ts':
                 return this.factories.get('ts')!;
@@ -209,7 +203,7 @@ export class MigrationGenerator {
             const cloneFile = fs
                 .readFileSync(clonePath)
                 .toString()
-                .replace(/(class\s+?)(Reversible|Irreversible)(Migration)([0-9]+)/s, `$1$2$3${timestamp}`);
+                .replace(/(.+?)(Reversible|Irreversible)(Migration)([0-9]+)/gm, `$1$2$3${timestamp}`);
 
             fs.writeFileSync(migrationPath, Buffer.from(cloneFile));
 

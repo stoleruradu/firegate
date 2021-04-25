@@ -47,7 +47,6 @@ Options:
   --doubleQuote       use double quotes instead of single quotes for imports
   --ext [extension]   migration extension type (choices: "js", "ts")
   -h, --help          output usage information
-
 ```
 
 ### Examples
