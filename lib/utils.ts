@@ -17,6 +17,10 @@ export const getAbsolutePath = (input: { migrationsDir?: string; migrationFileNa
     return path.resolve(process.cwd(), absolutePath);
 };
 
+export const getExtName = (fileName: string): string => {
+    return path.extname(fileName).split('.').pop() as string;
+}
+
 export const getMigrationsFiles = (input: { searchString?: string; migrationsDir?: string }): string[] => {
     const absolutePath = getAbsolutePath({ migrationsDir: input.migrationsDir });
     const files = fs.readdirSync(absolutePath).filter((fileName) => /[0-9]+-.+\.(ts|js)/.test(fileName));
