@@ -36,8 +36,9 @@ export interface IGenerationOption {
     irreversible?: boolean;
     clone?: string;
     path?: string;
-    tabs?: string;
+    tabs?: number;
     doubleQuote?: boolean;
+    ext?: 'js' | 'ts';
 }
 
 export enum MigrationType {
