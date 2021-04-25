@@ -35,17 +35,19 @@ Commands:
 Migration file name format: [timestamp]-[migration-name].[ext]
 
 ```
-Usage: firegate generate [options] [name]
+Usage: firegate generate [options] <name>
 
 Create a new migration file
 
 Options:
-  -I, --irreversible           create an irreversible migration
-  -C, --clone [name]           create a new migration from existing one
-  --path [path]                path to migrations location (default: migrations)
-  --tabs [tabsWidth]           tabs width for indentation
-  --doubleQuote [doubleQuote]  use double quotes instead of single quotes for imports
-  -h, --help                   output usage information
+  -I, --irreversible  create an irreversible migration
+  -C, --clone <name>  create a new migration from existing one
+  --path <path>       path to migrations location (default: migrations)
+  --tabs <number>     tabs width for indentation (default: migrations)
+  --doubleQuote       use double quotes instead of single quotes for imports
+  --ext [extension]   migration extension type (choices: "js", "ts")
+  -h, --help          output usage information
+
 ```
 
 ### Examples
