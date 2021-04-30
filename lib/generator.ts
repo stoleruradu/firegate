@@ -80,7 +80,7 @@ class TypescriptTemplateFactory extends TemplateFactory {
         return this.builder
             .clone()
             .spaceTabs(1)
-            .writeLn(`async ${name}({ app, firestore }: IMigrationInput): Promise<void> {`)
+            .writeLn(`async ${name}(input: IMigrationInput): Promise<void> {`)
             .spaceTabs(2)
             .writeLn(`return Promise.resolve(undefined);`)
             .spaceTabs(1)

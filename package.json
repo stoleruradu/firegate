@@ -6,9 +6,9 @@
         "access": "public"
     },
     "dependencies": {
-        "@google-cloud/firestore": "4.9.9",
+        "@google-cloud/firestore": "^4.9.9",
         "commander": "7.2.0",
-        "firebase-admin": "9.6.0",
+        "firebase-admin": "^9.6.0",
         "ts-node": "9.1.1",
         "typescript": "4.2.4"
     },
@@ -46,7 +46,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/stoleruradu/firegrator.git"
+        "url": "git+https://github.com/stoleruradu/firegate.git"
     },
     "keywords": [
         "firestore",

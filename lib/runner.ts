@@ -1,5 +1,12 @@
 import admin from 'firebase-admin';
-import { IMigration, IMigrationInput, IMigrationLog, IReversibleMigration, IRunnerOptions, MigrationType } from './types';
+import {
+    IListOptions,
+    IMigration,
+    IMigrationInput,
+    IMigrationLog,
+    IRunnerOptions,
+    MigrationType,
+} from './types';
 import { getAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
 import { firestore } from 'firebase-admin/lib/firestore';
 import * as assert from 'assert';
@@ -86,6 +93,28 @@ export class Runner {
             }
             console.info(`Migration ${migrationFile} executed.`);
         }
+    }
+
+    async list(options: IListOptions): Promise<void> {
+        const logMigrations = (list: string[]) => void console.log(list.join('\n'));
+        if (options.all) {
+            const list = getMigrationsFiles({ migrationsDir: options.path });
+            logMigrations(list);
+            return;
+        }
+
+        if (options.executed) {
+            const executed = await this.getExecutedMigrationLogs();
+            const foundFiles = getMigrationsFiles({ migrationsDir: options.path });
+            const list = foundFiles.filter((migrationFileName) => !!executed.filter(([id]) => !!~migrationFileName.indexOf(id)).length);
+            logMigrations(list);
+            return;
+        }
+
+        const executed = await this.getExecutedMigrationLogs();
+        const foundFiles = getMigrationsFiles({ migrationsDir: options.path });
+        const list = foundFiles.filter((migrationFileName) => !executed.filter(([id]) => !!~migrationFileName.indexOf(id)).length);
+        logMigrations(list);
     }
 
     private async createMigration(migrationFileName: string): Promise<IMigration> {
