@@ -11,9 +11,7 @@ Make sure to have the firebase `serviceAccountKey.json` file generated and store
 Export the env variable `GOOGLE_APPLICATION_CREDENTIALS='path to serviceAccountKey.json'`.  
 
 That's all.
-
 ## CLI
-
 ```
 Usage: firegate <command> [options]
 
@@ -28,7 +26,6 @@ Commands:
   ls [options]               list not executed migrations
   help [command]             display help for command
 ```
-
 ### firegate generate
 Migration file name format: [timestamp]-[migration-name].[ext]
 ```
@@ -40,12 +37,11 @@ Options:
   -I, --irreversible  create an irreversible migration
   -C, --clone <name>  create a new migration from existing one
   --path [path]       path to migrations location (default: migrations)
-  --tabs [number]     tabs width for indentation (default: migrations)
+  --tabs [number]     tabs width for indentation
   --doubleQuote       use double quotes instead of single quotes for imports
   --ext [extension]   migration extension type (choices: "js", "ts")
   -h, --help          output usage information
 ```
-
 ### Examples
 #### Typescript
 Reversible migration template
