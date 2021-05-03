@@ -1,12 +1,5 @@
 import admin from 'firebase-admin';
-import {
-    IListOptions,
-    IMigration,
-    IMigrationInput,
-    IMigrationLog,
-    IRunnerOptions,
-    MigrationType,
-} from './types';
+import { IListOptions, IMigration, IMigrationInput, IMigrationLog, IReversibleMigration, IRunnerOptions, MigrationType } from './types';
 import { getAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
 import { firestore } from 'firebase-admin/lib/firestore';
 import * as assert from 'assert';
@@ -14,6 +7,12 @@ import App = admin.app.App;
 import Firestore = admin.firestore.Firestore;
 import CollectionReference = admin.firestore.CollectionReference;
 import Timestamp = firestore.Timestamp;
+
+const teardownError = (error: Error) => {
+    console.error(error);
+    process.exit(1);
+};
+const teardown = (fn: (...args: any[]) => any) => async (...args: any[]): Promise<any> => Promise.resolve(fn(...args)).catch(teardownError);
 
 export class Runner {
     private readonly app: App;
@@ -34,34 +33,42 @@ export class Runner {
 
     private async migrate(migration: IMigration): Promise<void> {
         const input = this.createMigrationInput();
-        if (isIrreversible(migration)) {
-            await migration.execute(input);
-        } else {
-            await migration.up(input);
-        }
+        const teardownFn = teardown(async () => {
+            if (isIrreversible(migration)) {
+                await migration.execute(input);
+            } else {
+                await migration.up(input);
+            }
+        });
+
+        await teardownFn();
     }
 
     async revert(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
         const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
-        const pending = [
+        const revertibleMigrations = [
             ...(searchString && force
                 ? foundFiles
                 : foundFiles.filter((migrationFileName) => !!executedMigrations.filter(([id]) => !!~migrationFileName.indexOf(id)).length)),
         ];
+        const teardownFn = teardown(async (id: string, migration: IReversibleMigration) => {
+            await migration.down(this.createMigrationInput());
+            await this.removeMigrationLog(id);
+        });
 
-        console.info(`Found ${pending.length} migrations to revert.`);
+        console.info(`Found ${revertibleMigrations.length} migrations to revert.`);
 
-        for (const migrationFile of pending) {
+        for (const migrationFile of revertibleMigrations) {
             const [id] = getMigrationInfo(migrationFile);
             const migration = await this.createMigration(migrationFile);
 
             assert.ok(!isIrreversible(migration), `Cannot revert ${migrationFile} because it is an irreversible migration.`);
 
             if (!dryRun) {
-                await migration.down(this.createMigrationInput());
-                await this.removeMigrationLog(id);
+                await teardownFn(id, migration);
             }
+
             console.info(`Migration ${migrationFile} reverted.`);
         }
     }
@@ -69,15 +76,15 @@ export class Runner {
     async run(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
         const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
-        const pending = [
+        const runnableMigrations = [
             ...(searchString && force
                 ? foundFiles
                 : foundFiles.filter((migrationFileName) => !executedMigrations.filter(([id]) => !!~migrationFileName.indexOf(id)).length)),
         ];
 
-        console.info(`Found ${pending.length} migrations to run.`);
+        console.info(`Found ${runnableMigrations.length} migrations to run.`);
 
-        for (const migrationFile of pending) {
+        for (const migrationFile of runnableMigrations) {
             const [id, timestamp, name] = getMigrationInfo(migrationFile);
             const migration = await this.createMigration(migrationFile);
 
