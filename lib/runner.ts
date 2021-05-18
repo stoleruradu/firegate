@@ -1,4 +1,5 @@
 import admin from 'firebase-admin';
+import chalk from 'chalk';
 import { IListOptions, IMigration, IMigrationInput, IMigrationLog, IReversibleMigration, IRunnerOptions, MigrationType } from './types';
 import { getAbsolutePath, getMigrationInfo, getMigrationsFiles, isIrreversible } from './utils';
 import { firestore } from 'firebase-admin/lib/firestore';
@@ -7,6 +8,18 @@ import App = admin.app.App;
 import Firestore = admin.firestore.Firestore;
 import CollectionReference = admin.firestore.CollectionReference;
 import Timestamp = firestore.Timestamp;
+
+interface IServiceAccountCredential {
+    projectId: string;
+}
+
+const isObject = (value: unknown): value is Record<string, any> => 'object' === typeof value && value !== null;
+const isString = (value: unknown): value is string => 'string' === typeof value;
+const isServiceAccountCredential = (credential: unknown): credential is IServiceAccountCredential => isObject(credential) && isString(credential.projectId);
+
+const puts = (value: string) => console.log(value);
+const printProjectId = (app: App) =>
+    puts(`Using: ${chalk.bold(isServiceAccountCredential(app.options.credential) ? app.options.credential.projectId : 'Unknown')}\n`);
 
 const teardownError = (error: Error) => {
     console.error(error);
@@ -45,6 +58,8 @@ export class Runner {
     }
 
     async revert(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
+        printProjectId(this.app);
+
         const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
         const revertibleMigrations = [
@@ -74,6 +89,8 @@ export class Runner {
     }
 
     async run(dryRun: boolean, force: boolean, searchString?: string): Promise<void> {
+        printProjectId(this.app);
+
         const foundFiles = getMigrationsFiles({ migrationsDir: this.migrationsDir, searchString });
         const executedMigrations = await this.getExecutedMigrationLogs();
         const runnableMigrations = [
@@ -103,6 +120,8 @@ export class Runner {
     }
 
     async list(options: IListOptions): Promise<void> {
+        printProjectId(this.app);
+
         const logMigrations = (list: string[]) => void console.log(list.join('\n'));
         if (options.all) {
             const list = getMigrationsFiles({ migrationsDir: options.path });
