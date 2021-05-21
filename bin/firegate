@@ -1,2 +1,2 @@
-#!/usr/bin/env node --unhandled-rejections=strict
+#!/usr/bin/env node
 require('../cli/firegate')

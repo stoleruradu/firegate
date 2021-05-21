@@ -140,6 +140,7 @@ export class Runner {
         const executed = await this.getExecutedMigrationLogs();
         const foundFiles = getMigrationsFiles({ migrationsDir: options.path });
         const list = foundFiles.filter((migrationFileName) => !executed.filter(([id]) => !!~migrationFileName.indexOf(id)).length);
+
         logMigrations(list);
     }
 
