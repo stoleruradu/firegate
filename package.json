@@ -17,8 +17,8 @@
         "firegate": "bin/firegate.js"
     },
     "files": [
-        "bin",
-        "dist",
+        "bin/**/*.js",
+        "lib",
         "package.json",
         "README.md",
         "LICENSE"
@@ -39,18 +39,20 @@
         "eslint-plugin-node": "11.1.0",
         "eslint-plugin-promise": "4.3.1",
         "husky": "6.0.0",
-        "prettier": "2.2.1"
+        "lint-staged": "11.1.2",
+        "prettier": "2.2.1",
+        "validate-commit-msg": "2.14.0"
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
         "compile": "npm run build && tsc -p tsconfig.compile.json",
-        "format": "prettier --write \"**/*.{json}\"",
-        "lint": "eslint 'src/**/*.ts'",
-        "prepublish": "npm run compile"
+        "format": "prettier --write '**/*.json'",
+        "lint": "eslint '{bin,src}/**/*.ts'",
+        "prepare": "npm run compile"
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/stoleruradu/firegate.git"
+        "url": "https://github.com/stoleruradu/firegate.git"
     },
     "keywords": [
         "firestore",
@@ -62,5 +64,9 @@
     "bugs": {
         "url": "https://github.com/stoleruradu/firegate/issues"
     },
-    "homepage": "https://github.com/stoleruradu/firegate#readme"
+    "homepage": "https://github.com/stoleruradu/firegate#readme",
+    "lint-staged": {
+        "*.ts": "npm run lint -- --fix",
+        "*.{json}": "npm run format"
+    }
 }
