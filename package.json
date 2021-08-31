@@ -46,7 +46,7 @@
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
         "compile": "npm run build && tsc -p tsconfig.compile.json",
-        "format": "prettier --write '**/*.json'",
+        "format": "prettier --write '**/*.{json,md}'",
         "lint": "eslint '{bin,src}/**/*.ts'",
         "prepare": "npm run compile"
     },
@@ -67,6 +67,6 @@
     "homepage": "https://github.com/stoleruradu/firegate#readme",
     "lint-staged": {
         "*.ts": "npm run lint -- --fix",
-        "*.{json}": "npm run format"
+        "*.{json,md}": "npm run format"
     }
 }
