@@ -1,6 +1,6 @@
 import { CommanderStatic } from 'commander';
-import { IListOptions } from '../../lib/types';
-import { Runner } from '../../lib/runner';
+import { Runner } from '../../runner';
+import { IListOptions } from '../../types';
 
 export function load(commander: CommanderStatic): void {
     commander.program

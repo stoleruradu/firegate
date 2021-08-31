@@ -7,14 +7,9 @@ migrations/
 *.map
 
 # output
-lib/**/*.js
-cli/**/*.js
+dist/
+lib/
 bin/**/*.js
-lib/**/*.d.ts
-cli/**/*.d.ts
 bin/**/*.d.ts
-
-index.d.ts
-index.js
 
 serviceAccountKey.json

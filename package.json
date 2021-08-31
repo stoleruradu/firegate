@@ -14,11 +14,14 @@
         "typescript": "4.2.4"
     },
     "bin": {
-        "firegate": "bin/firegate"
+        "firegate": "bin/firegate.js"
     },
     "files": [
-        "lib",
-        "cli"
+        "bin",
+        "dist",
+        "package.json",
+        "README.md",
+        "LICENSE"
     ],
     "engines": {
         "node": ">= 10.13.0",
@@ -39,11 +42,11 @@
         "prettier": "2.2.1"
     },
     "scripts": {
-        "build": "tsc",
-        "start": "node bin/firegate",
-        "format": "prettier --write \"**/*.{ts,json}\"",
-        "lint": "eslint '{cli,lib}/**/*.ts' --fix",
-        "prepublish": "npm run build"
+        "build": "tsc -p tsconfig.build.json",
+        "compile": "npm run build && tsc -p tsconfig.compile.json",
+        "format": "prettier --write \"**/*.{json}\"",
+        "lint": "eslint 'src/**/*.ts'",
+        "prepublish": "npm run compile"
     },
     "repository": {
         "type": "git",

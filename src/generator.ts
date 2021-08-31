@@ -8,7 +8,7 @@ const EMPTY_STRING = '';
 const SPACE_TAB = ' ';
 const SINGLE_QUOTE = `'`;
 const DOUBLE_QUOTE = `"`;
-const PACKAGE_NAME = require('../package.json').name as string;
+const PACKAGE_NAME = 'firegate';
 
 class TemplateBuilder {
     protected readonly template: string[];

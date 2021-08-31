@@ -1,6 +1,6 @@
 import { CommanderStatic, Option } from 'commander';
-import { IGenerationOption } from '../../lib/types';
-import { MigrationGenerator } from '../../lib/generator';
+import { MigrationGenerator } from '../../generator';
+import { IGenerationOption } from '../../types';
 
 export function load(commander: CommanderStatic): void {
     commander.program
