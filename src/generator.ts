@@ -1,6 +1,6 @@
 import fs from 'fs';
 import * as assert from 'assert';
-import { IGenerationOption, ITemplateFactory } from './types';
+import { GenerateOptions, ITemplateFactory } from './types';
 import { getAbsolutePath, getExtName, getMigrationsFiles } from './utils';
 
 const NEW_LINE = '\n';
@@ -8,7 +8,6 @@ const EMPTY_STRING = '';
 const SPACE_TAB = ' ';
 const SINGLE_QUOTE = `'`;
 const DOUBLE_QUOTE = `"`;
-const PACKAGE_NAME = 'firegate';
 
 class TemplateBuilder {
     protected readonly template: string[];
@@ -167,13 +166,13 @@ export class MigrationGenerator {
     private readonly factories = new Map<'js' | 'ts', ITemplateFactory>();
     private readonly getMigrationName = (timestamp: number, name: string, ext: 'js' | 'ts') => `${timestamp}-${name}.${ext}`;
 
-    private constructor(private readonly options: IGenerationOption) {
-        this.factories.set('js', new JavascriptTemplateFactory(PACKAGE_NAME, !!options.doubleQuote, options.tabs));
-        this.factories.set('ts', new TypescriptTemplateFactory(PACKAGE_NAME, !!options.doubleQuote, options.tabs));
+    private constructor(private readonly options: GenerateOptions, packageName: string) {
+        this.factories.set('js', new JavascriptTemplateFactory(packageName, !!options.doubleQuote, options.tabs));
+        this.factories.set('ts', new TypescriptTemplateFactory(packageName, !!options.doubleQuote, options.tabs));
     }
 
-    static create(options: IGenerationOption): MigrationGenerator {
-        return new MigrationGenerator(options);
+    static create(options: GenerateOptions, packageName: string): MigrationGenerator {
+        return new MigrationGenerator(options, packageName);
     }
 
     private get templateFactory(): ITemplateFactory {

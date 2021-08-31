@@ -1,8 +1,8 @@
 import { CommanderStatic, Option } from 'commander';
 import { MigrationGenerator } from '../../generator';
-import { IGenerationOption } from '../../types';
+import { GenerateOptions } from '../../types';
 
-export function load(commander: CommanderStatic): void {
+export function load(commander: CommanderStatic, packageName: string): void {
     commander.program
         .command('generate <name>')
         .description('Create a new migration file')
@@ -12,5 +12,5 @@ export function load(commander: CommanderStatic): void {
         .option('--tabs [number]', 'tabs width for indentation')
         .option('--doubleQuote', 'use double quotes instead of single quotes for imports')
         .addOption(new Option('--ext [extension]', 'migration extension type').choices(['js', 'ts']))
-        .action((name: string, options: IGenerationOption) => MigrationGenerator.create(options).generate(name));
+        .action((name: string, options: GenerateOptions) => MigrationGenerator.create(options, packageName).generate(name));
 }

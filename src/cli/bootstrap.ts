@@ -16,7 +16,7 @@ export function bootstrap({ version, name }: BootstrapConfig): void {
         .usage('<command> [options]')
         .helpOption('-h, --help', 'output usage information');
 
-    GenerateCommand.load(Commander);
+    GenerateCommand.load(Commander, name);
     RevertCommand.load(Commander);
     RunCommand.load(Commander);
     ListCommand.load(Commander);

@@ -45,10 +45,10 @@
     },
     "scripts": {
         "build": "tsc -p tsconfig.build.json",
-        "compile": "npm run build && tsc -p tsconfig.compile.json",
         "format": "prettier --write '**/*.{json,md}'",
         "lint": "eslint '{bin,src}/**/*.ts'",
-        "prepare": "npm run compile"
+        "prepare": "npm run build && tsc -p tsconfig.compile.json",
+        "pre-commit": "npm run prepare && lint-staged"
     },
     "repository": {
         "type": "git",

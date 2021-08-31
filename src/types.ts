@@ -32,13 +32,13 @@ export interface IListOptions {
     all?: boolean;
 }
 
-export interface IGenerationOption {
-    irreversible?: boolean;
-    clone?: string;
-    path?: string;
-    tabs?: number;
-    doubleQuote?: boolean;
-    ext?: 'js' | 'ts';
+export type GenerateOptions = {
+    readonly irreversible?: boolean;
+    readonly clone?: string;
+    readonly path?: string;
+    readonly tabs?: number;
+    readonly doubleQuote?: boolean;
+    readonly ext?: 'js' | 'ts';
 }
 
 export enum MigrationType {
