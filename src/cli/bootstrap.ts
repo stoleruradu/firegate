@@ -7,7 +7,7 @@ import * as ListCommand from './commands/list';
 export type BootstrapConfig = {
     readonly version: string;
     readonly name: string;
-}
+};
 
 export function bootstrap({ version, name }: BootstrapConfig): void {
     Commander.program
@@ -26,5 +26,4 @@ export function bootstrap({ version, name }: BootstrapConfig): void {
     if (!process.argv.slice(2).length) {
         Commander.program.outputHelp();
     }
-
 }

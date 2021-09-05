@@ -39,7 +39,7 @@ export type GenerateOptions = {
     readonly tabs?: number;
     readonly doubleQuote?: boolean;
     readonly ext?: 'js' | 'ts';
-}
+};
 
 export enum MigrationType {
     reversible = 'reversible',

@@ -37,12 +37,16 @@ class TemplateBuilder {
     }
 
     spaceTabs(tabs: number): TemplateBuilder {
-        this.template.push(new Array(tabs * this.tabsWidth).fill(SPACE_TAB).join(EMPTY_STRING));
+        this.template.push(
+            new Array(tabs * this.tabsWidth).fill(SPACE_TAB).join(EMPTY_STRING),
+        );
         return this;
     }
 
     quoted(content: string): TemplateBuilder {
-        return this.load(this.clone().write(this.quote).write(content).write(this.quote));
+        return this.load(
+            this.clone().write(this.quote).write(content).write(this.quote),
+        );
     }
 
     load(builder: TemplateBuilder): TemplateBuilder {
@@ -62,7 +66,11 @@ class TemplateBuilder {
 
 abstract class TemplateFactory implements ITemplateFactory {
     protected readonly builder: TemplateBuilder;
-    protected constructor(protected readonly pkgName: string, doubleQuote: boolean, tabsWidth?: number) {
+    protected constructor(
+        protected readonly pkgName: string,
+        doubleQuote: boolean,
+        tabsWidth?: number,
+    ) {
         this.builder = new TemplateBuilder(doubleQuote, tabsWidth);
     }
 
@@ -72,10 +80,12 @@ abstract class TemplateFactory implements ITemplateFactory {
 
 class TypescriptTemplateFactory extends TemplateFactory {
     constructor(pkgName: string, doubleQuote: boolean, tabsWidth?: number) {
-        super(pkgName, doubleQuote, tabsWidth)
+        super(pkgName, doubleQuote, tabsWidth);
     }
 
-    private createMethodBuilder(name: 'execute' | 'up' | 'down'): TemplateBuilder {
+    private createMethodBuilder(
+        name: 'execute' | 'up' | 'down',
+    ): TemplateBuilder {
         return this.builder
             .clone()
             .spaceTabs(1)
@@ -95,12 +105,21 @@ class TypescriptTemplateFactory extends TemplateFactory {
     }
 
     createReversibleMigration(timestamp: number): string {
-        const [up, down] = ['up', 'down'].map((method) => this.createMethodBuilder(method as 'up' | 'down'));
+        const [up, down] = ['up', 'down'].map((method) =>
+            this.createMethodBuilder(method as 'up' | 'down'),
+        );
         return this.builder
             .reset()
-            .load(this.createImportsBuilder(['IMigrationInput', 'IReversibleMigration']))
+            .load(
+                this.createImportsBuilder([
+                    'IMigrationInput',
+                    'IReversibleMigration',
+                ]),
+            )
             .writeLn()
-            .writeLn(`export default class ReversibleMigration${timestamp} implements IReversibleMigration {`)
+            .writeLn(
+                `export default class ReversibleMigration${timestamp} implements IReversibleMigration {`,
+            )
             .load(up)
             .writeLn()
             .load(down)
@@ -111,9 +130,16 @@ class TypescriptTemplateFactory extends TemplateFactory {
     createIrreversibleMigration(timestamp: number): string {
         return this.builder
             .reset()
-            .load(this.createImportsBuilder(['IIrreversibleMigration', 'IMigrationInput']))
+            .load(
+                this.createImportsBuilder([
+                    'IIrreversibleMigration',
+                    'IMigrationInput',
+                ]),
+            )
             .writeLn()
-            .writeLn(`export default class IrreversibleMigration${timestamp} implements IIrreversibleMigration {`)
+            .writeLn(
+                `export default class IrreversibleMigration${timestamp} implements IIrreversibleMigration {`,
+            )
             .load(this.createMethodBuilder('execute'))
             .writeLn('}')
             .build();
@@ -122,13 +148,15 @@ class TypescriptTemplateFactory extends TemplateFactory {
 
 class JavascriptTemplateFactory extends TemplateFactory {
     constructor(pkgName: string, doubleQuote: boolean, tabsWidth?: number) {
-        super(pkgName, doubleQuote, tabsWidth)
+        super(pkgName, doubleQuote, tabsWidth);
     }
 
     createIrreversibleMigration(timestamp: number): string {
-        return this.builder.
-            reset()
-            .writeLn(`module.exports = class IrreversibleMigration${timestamp} {`)
+        return this.builder
+            .reset()
+            .writeLn(
+                `module.exports = class IrreversibleMigration${timestamp} {`,
+            )
             .spaceTabs(1)
             .writeLn(`async execute({ app, firestore }) {`)
             .spaceTabs(2)
@@ -136,12 +164,12 @@ class JavascriptTemplateFactory extends TemplateFactory {
             .spaceTabs(1)
             .writeLn('}')
             .writeLn('}')
-            .build()
+            .build();
     }
 
     createReversibleMigration(timestamp: number): string {
-        return this.builder.
-            reset()
+        return this.builder
+            .reset()
             .writeLn(`module.exports = class ReversibleMigration${timestamp} {`)
             .spaceTabs(1)
             .writeLn(`async up({ app, firestore }) {`)
@@ -157,21 +185,44 @@ class JavascriptTemplateFactory extends TemplateFactory {
             .spaceTabs(1)
             .writeLn('}')
             .writeLn('}')
-            .build()
+            .build();
     }
-
 }
 
 export class MigrationGenerator {
     private readonly factories = new Map<'js' | 'ts', ITemplateFactory>();
-    private readonly getMigrationName = (timestamp: number, name: string, ext: 'js' | 'ts') => `${timestamp}-${name}.${ext}`;
+    private readonly getMigrationName = (
+        timestamp: number,
+        name: string,
+        ext: 'js' | 'ts',
+    ) => `${timestamp}-${name}.${ext}`;
 
-    private constructor(private readonly options: GenerateOptions, packageName: string) {
-        this.factories.set('js', new JavascriptTemplateFactory(packageName, !!options.doubleQuote, options.tabs));
-        this.factories.set('ts', new TypescriptTemplateFactory(packageName, !!options.doubleQuote, options.tabs));
+    private constructor(
+        private readonly options: GenerateOptions,
+        packageName: string,
+    ) {
+        this.factories.set(
+            'js',
+            new JavascriptTemplateFactory(
+                packageName,
+                !!options.doubleQuote,
+                options.tabs,
+            ),
+        );
+        this.factories.set(
+            'ts',
+            new TypescriptTemplateFactory(
+                packageName,
+                !!options.doubleQuote,
+                options.tabs,
+            ),
+        );
     }
 
-    static create(options: GenerateOptions, packageName: string): MigrationGenerator {
+    static create(
+        options: GenerateOptions,
+        packageName: string,
+    ): MigrationGenerator {
         return new MigrationGenerator(options, packageName);
     }
 
@@ -191,18 +242,37 @@ export class MigrationGenerator {
         const irreversible = !!this.options['irreversible'];
 
         if (this.options.clone) {
-            const [cloneFileName] = getMigrationsFiles({ migrationsDir: this.options.path, searchString: this.options.clone });
+            const [cloneFileName] = getMigrationsFiles({
+                migrationsDir: this.options.path,
+                searchString: this.options.clone,
+            });
 
-            assert.ok(cloneFileName, `Filed to find migration file timestamp: ${this.options.clone}`);
+            assert.ok(
+                cloneFileName,
+                `Filed to find migration file timestamp: ${this.options.clone}`,
+            );
 
             const ext = getExtName(cloneFileName);
-            const migrationName = this.getMigrationName(timestamp, name, ext as 'ts' | 'js');
-            const clonePath = getAbsolutePath({ migrationsDir: this.options.path, migrationFileName: cloneFileName });
-            const migrationPath = getAbsolutePath({ migrationsDir: this.options.path, migrationFileName: migrationName });
+            const migrationName = this.getMigrationName(
+                timestamp,
+                name,
+                ext as 'ts' | 'js',
+            );
+            const clonePath = getAbsolutePath({
+                migrationsDir: this.options.path,
+                migrationFileName: cloneFileName,
+            });
+            const migrationPath = getAbsolutePath({
+                migrationsDir: this.options.path,
+                migrationFileName: migrationName,
+            });
             const cloneFile = fs
                 .readFileSync(clonePath)
                 .toString()
-                .replace(/(.+?)(Reversible|Irreversible)(Migration)([0-9]+)/gm, `$1$2$3${timestamp}`);
+                .replace(
+                    /(.+?)(Reversible|Irreversible)(Migration)([0-9]+)/gm,
+                    `$1$2$3${timestamp}`,
+                );
 
             fs.writeFileSync(migrationPath, Buffer.from(cloneFile));
 
@@ -210,8 +280,15 @@ export class MigrationGenerator {
             return;
         }
 
-        const migrationName = this.getMigrationName(timestamp, name, this.options.ext ?? 'ts');
-        const migrationPath = getAbsolutePath({ migrationsDir: this.options.path, migrationFileName: migrationName });
+        const migrationName = this.getMigrationName(
+            timestamp,
+            name,
+            this.options.ext ?? 'ts',
+        );
+        const migrationPath = getAbsolutePath({
+            migrationsDir: this.options.path,
+            migrationFileName: migrationName,
+        });
         const template: string = irreversible
             ? this.templateFactory.createIrreversibleMigration(timestamp)
             : this.templateFactory.createReversibleMigration(timestamp);

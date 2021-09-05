@@ -58,7 +58,8 @@ Reversible migration template
 ```typescript
 import { IMigrationInput, IReversibleMigration } from 'firegate/lib/types';
 
-export default class ReversibleMigration1619104543555 implements IReversibleMigration {
+export default class ReversibleMigration1619104543555
+    implements IReversibleMigration {
     async up(input: IMigrationInput): Promise<void> {
         return Promise.resolve(undefined);
     }
@@ -74,7 +75,8 @@ Irreversible migration template
 ```typescript
 import { IIrreversibleMigration, IMigrationInput } from 'firegate/lib/types';
 
-export default class IrreversibleMigration1619105016442 implements IIrreversibleMigration {
+export default class IrreversibleMigration1619105016442
+    implements IIrreversibleMigration {
     async execute(input: IMigrationInput): Promise<void> {
         return Promise.resolve(undefined);
     }
